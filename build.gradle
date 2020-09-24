@@ -42,6 +42,10 @@ dependencies {
 	implementation "org.joml:joml:${jomlVersion}"
 }
 
+java {
+	sourceCompatibility = JavaVersion.VERSION_1_8
+}
+
 application {
 	mainClass = "BulletSurvive.BulletSurvive"
 }
