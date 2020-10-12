@@ -90,9 +90,9 @@ public class Chaq implements AutoCloseable {
 
 	private boolean compileShader(int shader) {
 		try (MemoryStack stack = stackPush()) {
-			glCompileShader(vert_i);
+			glCompileShader(shader);
 			IntBuffer status = stack.mallocInt(1);
-			glGetShaderiv(vert_i, GL_COMPILE_STATUS, status);
+			glGetShaderiv(shader, GL_COMPILE_STATUS, status);
 			return status.get(0) == GL_TRUE;
 		}
 	}
@@ -147,7 +147,13 @@ public class Chaq implements AutoCloseable {
 		glBindFragDataLocation(shaderProgram, 0, "outColor");
 		glLinkProgram(shaderProgram);
 		glUseProgram(shaderProgram);
-		BulletSurvive.processErrors();
+		try {
+			BulletSurvive.processErrors();
+		} catch (Exception e) {
+			System.out.println(glGetProgramInfoLog(shaderProgram));
+			throw new RuntimeException("glUseShader error");
+		}
+		
 
 		// Layout stuff
 		int pos = glGetAttribLocation(shaderProgram, "position");
