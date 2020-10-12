@@ -65,22 +65,27 @@ public class Chaq implements AutoCloseable {
 		tex = glGenTextures();
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, tex);
+		BulletSurvive.processErrors();
 
 		// Upload then free image
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB8, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		BulletSurvive.processErrors();
 		stbi_image_free(image);
 
 		// Change sampling to only sample up to the borders of the texture
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+		BulletSurvive.processErrors();
 
 		// Texture filtering
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		BulletSurvive.processErrors();
 
 		// Point program's uniform "tex" sampler2d variable to texture 0
 		u_tex = glGetUniformLocation(shaderProgram, "tex");
 		glUniform1i(u_tex, 0);
+		BulletSurvive.processErrors();
 	}
 
 	private boolean compileShader(int shader) {
@@ -96,6 +101,7 @@ public class Chaq implements AutoCloseable {
 		// Vertex array object for easy context switching ig?
 		vao = glGenVertexArrays();
 		glBindVertexArray(vao);
+		BulletSurvive.processErrors();
 
 		// VBO
 		vbo = glGenBuffers();
@@ -108,6 +114,7 @@ public class Chaq implements AutoCloseable {
 		};
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+		BulletSurvive.processErrors();
 
 		// Element array
 		ebo = glGenBuffers();
@@ -117,6 +124,7 @@ public class Chaq implements AutoCloseable {
 		};
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, elements, GL_STATIC_DRAW);
+		BulletSurvive.processErrors();
 
 		// Shader stuff
 		vert_i = glCreateShader(GL_VERTEX_SHADER);
@@ -124,12 +132,14 @@ public class Chaq implements AutoCloseable {
 		if (!compileShader(vert_i)) {
 			throw new RuntimeException(glGetShaderInfoLog(vert_i));
 		}
+		BulletSurvive.processErrors();
 
 		frag_i = glCreateShader(GL_FRAGMENT_SHADER);
 		glShaderSource(frag_i, frag);
 		if (!compileShader(frag_i)) {
 			throw new RuntimeException(glGetShaderInfoLog(frag_i));
 		}
+		BulletSurvive.processErrors();
 
 		shaderProgram = glCreateProgram();
 		glAttachShader(shaderProgram, vert_i);
@@ -137,6 +147,7 @@ public class Chaq implements AutoCloseable {
 		glBindFragDataLocation(shaderProgram, 0, "outColor");
 		glLinkProgram(shaderProgram);
 		glUseProgram(shaderProgram);
+		BulletSurvive.processErrors();
 
 		// Layout stuff
 		int pos = glGetAttribLocation(shaderProgram, "position");
@@ -146,9 +157,11 @@ public class Chaq implements AutoCloseable {
 		int texc = glGetAttribLocation(shaderProgram, "texcoord");
 		glEnableVertexAttribArray(texc);
 		glVertexAttribPointer(texc, 2, GL_FLOAT, false, 16, 8);
+		BulletSurvive.processErrors();
 
 		u_pixel = glGetUniformLocation(shaderProgram, "pixel");
 		u_scale = glGetUniformLocation(shaderProgram, "scale");
+		BulletSurvive.processErrors();
 
 		loadImage();
 
@@ -169,16 +182,19 @@ public class Chaq implements AutoCloseable {
 		// Bind the texture
 		glActiveTexture(GL_TEXTURE0); // Active texture 0 for the uniform in shader
 		glBindTexture(GL_TEXTURE_2D, tex); // Bind the texture to texture 0
+		BulletSurvive.processErrors();
 
 		// Send transforms here for now
 		// In the future, pixel matrix will get sent from the main loop
 		// Other transforms will remain here
 		glUniformMatrix4fv(u_pixel, false, BulletSurvive.getInstance().getPixelMatrix().get(fb));
 		glUniformMatrix4fv(u_scale, false, scale.get(fb));
+		BulletSurvive.processErrors();
 
 		// Bind VAO, this binds the VBO, EBO, and layout stuff with it
 		glBindVertexArray(vao);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		BulletSurvive.processErrors();
 	}
 
 	public void close() {

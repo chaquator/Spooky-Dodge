@@ -149,9 +149,11 @@ public class BulletSurvive {
 
 		// Enable GL
 		GL.createCapabilities();
+		processErrors();
 
 		// Set the clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+		processErrors();
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
@@ -204,6 +206,15 @@ public class BulletSurvive {
 				gameUpdate(total_time);
 				acc -= interval;
 			}
+			
+			processErrors();
+		}
+	}
+	
+	public static void processErrors() {
+		int e;
+		while((e = glGetError()) != GL_NO_ERROR) {
+			throw new RuntimeException(String.format("%x%n", e));
 		}
 	}
 
