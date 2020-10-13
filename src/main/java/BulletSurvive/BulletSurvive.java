@@ -195,8 +195,13 @@ public class BulletSurvive {
 
     // Subtract height of enemy to line up with top of screen
     float y = getDimensions().y - enemy.getHeight();
-    enemy.setPos(0.0f, y);
-    System.out.println(delta_time);
+
+    // Move enemy from side to side along top of screen
+    //if ()
+    enemy.setPos(
+      (getDimensions().x - enemy.getWidth()) * (float) Math.cos(total_time),
+      y
+    );
   }
 
   private void loop() {

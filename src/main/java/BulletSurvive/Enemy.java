@@ -253,4 +253,12 @@ public class Enemy implements AutoCloseable {
   public float getWidth() {
     return this.width;
   }
+
+  public float getX() {
+    return this.pos.x;
+  }
+
+  public float getY() {
+    return this.pos.y;
+  }
 }
