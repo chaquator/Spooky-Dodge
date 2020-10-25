@@ -1,10 +1,12 @@
 package BulletSurvive;
 
 import java.lang.Math;
+
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 import org.joml.*;
+
 import java.nio.*;
 
 // import org.lwjgl.openal.AL;
@@ -83,7 +85,7 @@ public class BulletSurvive {
 
 		loop();
 
-		for(Chaq chaq: chaqs) {
+		for (Chaq chaq : chaqs) {
 			chaq.close();
 		}
 
@@ -137,23 +139,30 @@ public class BulletSurvive {
 					(vidmode.width() - pWidth.get(0)) / 2,
 					(vidmode.height() - pHeight.get(0)) / 2
 			);
-		} // the stack frame is popped automatically
+		}
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		// Enable v-sync
-		glfwSwapInterval(1);
+
+		// V-sync -- disabled for now
+		glfwSwapInterval(0);
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
 
 		// Make the window visible
 		glfwShowWindow(window);
 
 		// Enable GL
 		GL.createCapabilities();
-		processErrors();
+		checkGlErrors();
 
 		// Set the clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-		processErrors();
+		checkGlErrors();
+
+		// Alpha blending
+		// Assets will be non-premultiplied alpha blended using one-minus-source-alpha function
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
@@ -163,7 +172,7 @@ public class BulletSurvive {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 		// This should draw it
-		for(Chaq chaq: chaqs) {
+		for (Chaq chaq : chaqs) {
 			chaq.draw();
 		}
 
@@ -171,10 +180,10 @@ public class BulletSurvive {
 	}
 
 	private void gameUpdate(float time) {
-		double t = time * 2*Math.PI;
+		double t = time * 2 * Math.PI;
 		float radius = 256;
-		chaqs[0].setPos(radius * (float)Math.cos(t), radius * (float)Math.sin(t));
-		chaqs[1].setPos(radius * (float)Math.cos(t + Math.PI), radius * (float)Math.sin(t + Math.PI));
+		chaqs[0].setPos(radius * (float) Math.cos(t), radius * (float) Math.sin(t));
+		chaqs[1].setPos(radius * (float) Math.cos(t + Math.PI), radius * (float) Math.sin(t + Math.PI));
 	}
 
 	private void loop() {
@@ -186,7 +195,7 @@ public class BulletSurvive {
 		// Update inputs at 60 fps
 		float elapsed;
 		float acc = 0f;
-		float interval = 1f/60;
+		float interval = 1f / 240;
 		float total_time = 0;
 		game_timer.init();
 		render_timer.init();
@@ -194,27 +203,27 @@ public class BulletSurvive {
 			// Process glfw events
 			glfwPollEvents();
 
-			// Render game
-			float render_time = render_timer.getElapsedTime();
-			render();
-
 			// Update game at fixed rate
 			elapsed = game_timer.getElapsedTime();
 			acc += elapsed;
 			total_time += elapsed;
-			while(acc >= interval) {
+			while (acc >= interval) {
 				gameUpdate(total_time);
 				acc -= interval;
 			}
-			
-			processErrors();
+
+			// Render game
+			float render_time = render_timer.getElapsedTime();
+			render();
+
+			checkGlErrors();
 		}
 	}
-	
-	public static void processErrors() {
+
+	public static void checkGlErrors() {
 		int e;
-		while((e = glGetError()) != GL_NO_ERROR) {
-			throw new RuntimeException(String.format("%x%n", e));
+		while ((e = glGetError()) != GL_NO_ERROR) {
+			throw new RuntimeException(String.format("GL ERROR: %x%n", e));
 		}
 	}
 
