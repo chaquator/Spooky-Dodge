@@ -35,7 +35,7 @@ public class BulletSurvive {
 	private KeyCallBack kcb = new KeyCallBack();
 
 	/**
-	 * Dimensions vector
+	 * Dimensions vector -- window dimensions
 	 */
 	private final Vector2f dimensions = new Vector2f(960, 720);
 	/**
@@ -153,11 +153,11 @@ public class BulletSurvive {
 
 		// Enable GL
 		GL.createCapabilities();
-		checkGlErrors();
+		Utils.checkGlErrors();
 
 		// Set the clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-		checkGlErrors();
+		Utils.checkGlErrors();
 
 		// Alpha blending
 		// Assets will be non-premultiplied alpha blended using one-minus-source-alpha function
@@ -179,8 +179,8 @@ public class BulletSurvive {
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 
-	private void gameUpdate(float time) {
-		double t = time * 2 * Math.PI;
+	private void gameUpdate(float dt) {
+		double t = game_timer.getTime() * 2 * Math.PI;
 		float radius = 256;
 		chaqs[0].setPos(radius * (float) Math.cos(t), radius * (float) Math.sin(t));
 		chaqs[1].setPos(radius * (float) Math.cos(t + Math.PI), radius * (float) Math.sin(t + Math.PI));
@@ -192,38 +192,30 @@ public class BulletSurvive {
 		chaqs[0] = new Chaq();
 		chaqs[1] = new Chaq();
 
-		// Update inputs at 60 fps
-		float elapsed;
-		float acc = 0f;
-		float interval = 1f / 240;
-		float total_time = 0;
 		game_timer.init();
 		render_timer.init();
+
+		// Update inputs at 240 Hz
+		float game_elapsed;
+		float game_acc = 0f;
+		float game_interval = 1f / 240;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
 
 			// Update game at fixed rate
-			elapsed = game_timer.getElapsedTime();
-			acc += elapsed;
-			total_time += elapsed;
-			while (acc >= interval) {
-				gameUpdate(total_time);
-				acc -= interval;
+			game_elapsed = game_timer.getElapsedTime();
+			game_acc += game_elapsed;
+			while (game_acc >= game_interval) {
+				gameUpdate(game_interval);
+				game_acc -= game_interval;
 			}
 
 			// Render game
 			float render_time = render_timer.getElapsedTime();
 			render();
 
-			checkGlErrors();
-		}
-	}
-
-	public static void checkGlErrors() {
-		int e;
-		while ((e = glGetError()) != GL_NO_ERROR) {
-			throw new RuntimeException(String.format("GL ERROR: %x%n", e));
+			Utils.checkGlErrors();
 		}
 	}
 

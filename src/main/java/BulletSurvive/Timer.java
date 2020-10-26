@@ -5,14 +5,16 @@ package BulletSurvive;
   */
 public class Timer {
 
+	private double initTime;
 	private double lastLoopTime;
 
 	public void init() {
 		lastLoopTime = getTime();
+		initTime = getTime();
 	}
 
 	public double getTime() {
-		return System.nanoTime() / 1_000_000_000.0;
+		return (System.nanoTime()-initTime) / 1_000_000_000.0;
 	}
 
 	public float getElapsedTime() {
