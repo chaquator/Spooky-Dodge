@@ -24,8 +24,8 @@ public class BulletSurvive {
 	// The window handle
 	private long window;
 
-	// Testing chaqs
-	private Chaq[] chaqs;
+	private Shader base_shader;
+	private Level level;
 
 	// Timers
 	private Timer game_timer = new Timer();
@@ -74,6 +74,10 @@ public class BulletSurvive {
 		return pixelMatrix;
 	}
 
+	public Shader getBaseShader() {
+		return this.base_shader;
+	}
+
 	private BulletSurvive() {
 		super();
 	}
@@ -85,17 +89,7 @@ public class BulletSurvive {
 
 		loop();
 
-		for (Chaq chaq : chaqs) {
-			chaq.close();
-		}
-
-		// Free the window callbacks and destroy the window
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
-
-		// Terminate GLFW and free the error callback
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
+		cleanup();
 	}
 
 	private void init() {
@@ -164,6 +158,9 @@ public class BulletSurvive {
 		glEnable(GL_BLEND);
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+		// Create the basic shader
+		this.base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
+
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
 	}
@@ -171,26 +168,15 @@ public class BulletSurvive {
 	private void render() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-		// This should draw it
-		for (Chaq chaq : chaqs) {
-			chaq.draw();
-		}
-
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 
 	private void gameUpdate(float dt) {
 		double t = game_timer.getTime() * 2 * Math.PI;
 		float radius = 256;
-		chaqs[0].setPos(radius * (float) Math.cos(t), radius * (float) Math.sin(t));
-		chaqs[1].setPos(radius * (float) Math.cos(t + Math.PI), radius * (float) Math.sin(t + Math.PI));
 	}
 
 	private void loop() {
-		// The test chaq
-		chaqs = new Chaq[2];
-		chaqs[0] = new Chaq();
-		chaqs[1] = new Chaq();
 
 		game_timer.init();
 		render_timer.init();
@@ -217,6 +203,18 @@ public class BulletSurvive {
 
 			Utils.checkGlErrors();
 		}
+	}
+
+	private void cleanup() {
+		this.base_shader.close();
+
+		// Free the window callbacks and destroy the window
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
+
+		// Terminate GLFW and free the error callback
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
 	}
 
 	public static void main(String[] args) {

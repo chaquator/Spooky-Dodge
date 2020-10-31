@@ -58,6 +58,8 @@ public class SpriteManager implements AutoCloseable {
 	 * @param sprite -- sset to remove
 	 */
 	public void removeSprite(Sprite sprite) {
+		// TODO: need to add reference counting if multiple entities use the same sprite
+
 		if (!spriteMap.containsKey(sprite.getTextureSource()))
 			throw new RuntimeException("Asset not found in asset map");
 		spriteMap.remove(sprite.getTextureSource());
@@ -81,12 +83,16 @@ public class SpriteManager implements AutoCloseable {
 		glBindTexture(GL_TEXTURE_2D, sprite.getTextureId());
 
 		// Upload uniforms
-		glUniformMatrix4fv(sprite.getPixelUniform(), false, BulletSurvive.getInstance().getPixelMatrix().get(float_buf));
-		temp_mat.identity();
-		temp_mat.scale(scale, scale, 1);
-		temp_mat.rotateAffine(angle, 0, 0, 1);
-		temp_mat.translate(position.x, position.y, 0);
-		glUniformMatrix4fv(sprite.getTransformUniform(), false, temp_mat.get(float_buf));
+
+		// Pixel matrix
+		glUniformMatrix4fv(BulletSurvive.getInstance().getBaseShader().getPixelUniform(), false, BulletSurvive.getInstance().getPixelMatrix().get(float_buf));
+
+		// Transform matrix for given object
+		temp_mat.identity()
+				.scale(scale, scale, 1)
+				.rotateAffine(angle, 0, 0, 1)
+				.translate(position.x, position.y, 0);
+		glUniformMatrix4fv(BulletSurvive.getInstance().getBaseShader().getTransformUniform(), false, temp_mat.get(float_buf));
 
 		// Bind VAO
 		glBindVertexArray(sprite.getVao());
