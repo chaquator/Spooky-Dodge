@@ -11,10 +11,8 @@ import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 public class Shader implements AutoCloseable {
-	private int vert_i, frag_i, shader_program;
-	private int u_pixel, u_transform;
-	private String vert_filename;
-	private String frag_filename;
+	private final int vert_i, frag_i, shader_program;
+	private final int u_pixel, u_transform;
 
 	public int getShaderProgram() {
 		return this.shader_program;
@@ -29,35 +27,38 @@ public class Shader implements AutoCloseable {
 	}
 
 	public Shader(String vert_f, String frag_f) {
-		this.vert_filename = vert_f;
-		this.frag_filename = frag_f;
-
 		// Vertex shader
 		this.vert_i = glCreateShader(GL_VERTEX_SHADER);
 		String vert_src;
 		try {
-			vert_src = Files.readString(Paths.get(this.vert_filename));
+			vert_src = Files.readString(Paths.get(vert_f));
 		} catch (IOException e) {
-			throw new RuntimeException(String.format("File not found: %s", this.vert_filename));
+			throw new RuntimeException(String.format("File not found: %s", vert_f));
 		}
 		glShaderSource(this.vert_i, vert_src);
-		if (!compileShader(this.vert_i)) {
+		if (compileShader(this.vert_i)) {
+
+		} else {
 			throw new RuntimeException(glGetShaderInfoLog(this.vert_i));
 		}
+		System.out.println(glGetShaderInfoLog(this.vert_i));
 		Utils.checkGlErrors();
 
 		// Fragment shader
 		this.frag_i = glCreateShader(GL_FRAGMENT_SHADER);
 		String frag_src;
 		try {
-			frag_src = Files.readString(Paths.get(this.frag_filename));
+			frag_src = Files.readString(Paths.get(frag_f));
 		} catch (IOException e) {
-			throw new RuntimeException(String.format("File not found: %s", this.frag_filename));
+			throw new RuntimeException(String.format("File not found: %s", frag_f));
 		}
 		glShaderSource(this.frag_i, frag_src);
-		if (!compileShader(this.frag_i)) {
+		if (compileShader(this.frag_i)) {
+
+		} else {
 			throw new RuntimeException(glGetShaderInfoLog(this.frag_i));
 		}
+		System.out.println(glGetShaderInfoLog(this.frag_i));
 		Utils.checkGlErrors();
 
 		// Create shader program, attach shaders to it, bind color, and link
@@ -88,6 +89,10 @@ public class Shader implements AutoCloseable {
 		Utils.checkGlErrors();
 	}
 
+	/**
+	 * @param shader shader program number
+	 * @return true if shader compiles successfully
+	 */
 	private boolean compileShader(int shader) {
 		try (MemoryStack stack = stackPush()) {
 			glCompileShader(shader);

@@ -8,6 +8,7 @@ import org.lwjgl.system.*;
 import org.joml.*;
 
 import java.nio.*;
+import java.util.HashMap;
 
 // import org.lwjgl.openal.AL;
 
@@ -28,18 +29,20 @@ public class BulletSurvive {
 	private Level level;
 
 	// Timers
-	private Timer game_timer = new Timer();
-	private Timer render_timer = new Timer();
+	private final Timer game_timer = new Timer();
+	private final Timer render_timer = new Timer();
 
-	// Callback
-	private KeyCallBack kcb = new KeyCallBack();
+	// Key input
+	private final KeyCallBack kcb = new KeyCallBack();
+	private final HashMap<Integer, Boolean> key_map = new HashMap<>();
 
 	/**
 	 * Dimensions vector -- window dimensions
 	 */
 	private final Vector2f dimensions = new Vector2f(960, 720);
+
 	/**
-	 * Pixel matrix -- transforms from pixel-space to opengl-space
+	 * Transformation matrix from pixel-space (1/dimension magnitude) to opengl-space (-1.0 to 1.0 mapping)
 	 */
 	private Matrix4f pixelMatrix;
 
@@ -78,14 +81,23 @@ public class BulletSurvive {
 		return this.base_shader;
 	}
 
-	private BulletSurvive() {
-		super();
+	/**
+	 * Query game instance for current key state
+	 * @param key GLFW Key
+	 * @return true if key is down, false if up
+	 */
+	public boolean getKeyState(int key) {
+		return key_map.getOrDefault(key, false);
+	}
+
+	public static void main(String[] args) {
+		BulletSurvive.getInstance().run();
 	}
 
 	public void run() {
 		init();
 
-		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
+		level = new InGameLevel();
 
 		loop();
 
@@ -159,25 +171,31 @@ public class BulletSurvive {
 		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 		// Create the basic shader
-		this.base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
+		base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
+
+		// Set pixel matrix
+		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
+
+		// Utility temporaries
+		Utils.initTemp();
 	}
 
-	private void render() {
+	private void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
+
+		level.render(dt);
 
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 
 	private void gameUpdate(float dt) {
-		double t = game_timer.getTime() * 2 * Math.PI;
-		float radius = 256;
+		level.tick(dt);
 	}
 
 	private void loop() {
-
 		game_timer.init();
 		render_timer.init();
 
@@ -199,7 +217,7 @@ public class BulletSurvive {
 
 			// Render game
 			float render_time = render_timer.getElapsedTime();
-			render();
+			render(render_time);
 
 			Utils.checkGlErrors();
 		}
@@ -207,6 +225,11 @@ public class BulletSurvive {
 
 	private void cleanup() {
 		this.base_shader.close();
+
+		level.end();
+
+		// Free utilitiy temps
+		Utils.cleanTemp();
 
 		// Free the window callbacks and destroy the window
 		glfwFreeCallbacks(window);
@@ -217,12 +240,19 @@ public class BulletSurvive {
 		glfwSetErrorCallback(null).free();
 	}
 
-	public static void main(String[] args) {
-		BulletSurvive.getInstance().run();
+	private BulletSurvive() {
+		super();
 	}
 
-	static class KeyCallBack implements GLFWKeyCallbackI {
+	class KeyCallBack implements GLFWKeyCallbackI {
 		public void invoke(long window, int key, int scancode, int action, int mods) {
+			// yes lets put dense key codes into a heap hash map managed by java
+			if(action == GLFW_PRESS) {
+				key_map.put(key, true);
+			} else if(action == GLFW_RELEASE) {
+				key_map.put(key, false);
+			}
+
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
 		}

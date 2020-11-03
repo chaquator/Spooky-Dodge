@@ -1,14 +1,24 @@
 package BulletSurvive;
 
-public class Level implements AutoCloseable{
-	SpriteManager manager;
+public interface Level {
+	/**
+	 * Advances the state of the level. Passed in dt which is change in time since last tick.
+	 * In this method you should call the tick methods of all entities.
+	 *
+	 * @param dt change in time as seconds
+	 */
+	void tick(float dt);
 
-	public Level() {
-		this.manager = new SpriteManager();
-	}
+	/**
+	 * Render the level. Passed in the frame time.
+	 * In this method you should call the render method of all entities.
+	 *
+	 * @param dt frame time in seconds
+	 */
+	void render(float dt);
 
-	@Override
-	public void close() {
-		manager.close();
-	}
+	/**
+	 * Close level
+	 */
+	void end();
 }
