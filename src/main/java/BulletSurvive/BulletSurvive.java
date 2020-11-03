@@ -1,11 +1,14 @@
 package BulletSurvive;
 
 import java.lang.Math;
+
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
 import org.joml.*;
+
 import java.nio.*;
+import java.util.HashMap;
 
 // import org.lwjgl.openal.AL;
 
@@ -22,22 +25,24 @@ public class BulletSurvive {
 	// The window handle
 	private long window;
 
-	// Testing chaqs
-	private Chaq[] chaqs;
+	private Shader base_shader;
+	private Level level;
 
 	// Timers
-	private Timer game_timer = new Timer();
-	private Timer render_timer = new Timer();
+	private final Timer game_timer = new Timer();
+	private final Timer render_timer = new Timer();
 
-	// Callback
-	private KeyCallBack kcb = new KeyCallBack();
+	// Key input
+	private final KeyCallBack kcb = new KeyCallBack();
+	private final HashMap<Integer, Boolean> key_map = new HashMap<>();
 
 	/**
-	 * Dimensions vector
+	 * Dimensions vector -- window dimensions
 	 */
 	private final Vector2f dimensions = new Vector2f(960, 720);
+
 	/**
-	 * Pixel matrix -- transforms from pixel-space to opengl-space
+	 * Transformation matrix from pixel-space (1/dimension magnitude) to opengl-space (-1.0 to 1.0 mapping)
 	 */
 	private Matrix4f pixelMatrix;
 
@@ -72,28 +77,31 @@ public class BulletSurvive {
 		return pixelMatrix;
 	}
 
-	private BulletSurvive() {
-		super();
+	public Shader getBaseShader() {
+		return this.base_shader;
+	}
+
+	/**
+	 * Query game instance for current key state
+	 * @param key GLFW Key
+	 * @return true if key is down, false if up
+	 */
+	public boolean getKeyState(int key) {
+		return key_map.getOrDefault(key, false);
+	}
+
+	public static void main(String[] args) {
+		BulletSurvive.getInstance().run();
 	}
 
 	public void run() {
 		init();
 
-		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
+		level = new InGameLevel();
 
 		loop();
 
-		for(Chaq chaq: chaqs) {
-			chaq.close();
-		}
-
-		// Free the window callbacks and destroy the window
-		glfwFreeCallbacks(window);
-		glfwDestroyWindow(window);
-
-		// Terminate GLFW and free the error callback
-		glfwTerminate();
-		glfwSetErrorCallback(null).free();
+		cleanup();
 	}
 
 	private void init() {
@@ -137,93 +145,114 @@ public class BulletSurvive {
 					(vidmode.width() - pWidth.get(0)) / 2,
 					(vidmode.height() - pHeight.get(0)) / 2
 			);
-		} // the stack frame is popped automatically
+		}
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
-		// Enable v-sync
-		glfwSwapInterval(1);
+
+		// V-sync -- disabled for now
+		glfwSwapInterval(0);
+		glfwWindowHint(GLFW_DOUBLEBUFFER, GL_FALSE);
 
 		// Make the window visible
 		glfwShowWindow(window);
 
 		// Enable GL
 		GL.createCapabilities();
-		processErrors();
+		Utils.checkGlErrors();
 
 		// Set the clear color
 		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
-		processErrors();
+		Utils.checkGlErrors();
+
+		// Alpha blending
+		// Assets will be non-premultiplied alpha blended using one-minus-source-alpha function
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+		// Create the basic shader
+		base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
+
+		// Set pixel matrix
+		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
+
+		// Utility temporaries
+		Utils.initTemp();
 	}
 
-	private void render() {
+	private void render(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
-		// This should draw it
-		for(Chaq chaq: chaqs) {
-			chaq.draw();
-		}
+		level.render(dt);
 
 		glfwSwapBuffers(window); // swap the color buffers
 	}
 
-	private void gameUpdate(float time) {
-		double t = time * 2*Math.PI;
-		float radius = 256;
-		chaqs[0].setPos(radius * (float)Math.cos(t), radius * (float)Math.sin(t));
-		chaqs[1].setPos(radius * (float)Math.cos(t + Math.PI), radius * (float)Math.sin(t + Math.PI));
+	private void gameUpdate(float dt) {
+		level.tick(dt);
 	}
 
 	private void loop() {
-		// The test chaq
-		chaqs = new Chaq[2];
-		chaqs[0] = new Chaq();
-		chaqs[1] = new Chaq();
-
-		// Update inputs at 60 fps
-		float elapsed;
-		float acc = 0f;
-		float interval = 1f/60;
-		float total_time = 0;
 		game_timer.init();
 		render_timer.init();
+
+		// Update inputs at 240 Hz
+		float game_elapsed;
+		float game_acc = 0f;
+		float game_interval = 1f / 240;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
 
+			// Update game at fixed rate
+			game_elapsed = game_timer.getElapsedTime();
+			game_acc += game_elapsed;
+			while (game_acc >= game_interval) {
+				gameUpdate(game_interval);
+				game_acc -= game_interval;
+			}
+
 			// Render game
 			float render_time = render_timer.getElapsedTime();
-			render();
+			render(render_time);
 
-			// Update game at fixed rate
-			elapsed = game_timer.getElapsedTime();
-			acc += elapsed;
-			total_time += elapsed;
-			while(acc >= interval) {
-				gameUpdate(total_time);
-				acc -= interval;
-			}
-			
-			processErrors();
-		}
-	}
-	
-	public static void processErrors() {
-		int e;
-		while((e = glGetError()) != GL_NO_ERROR) {
-			throw new RuntimeException(String.format("%x%n", e));
+			Utils.checkGlErrors();
 		}
 	}
 
-	public static void main(String[] args) {
-		BulletSurvive.getInstance().run();
+	private void cleanup() {
+		this.base_shader.close();
+
+		level.end();
+
+		// Free utilitiy temps
+		Utils.cleanTemp();
+
+		// Free the window callbacks and destroy the window
+		glfwFreeCallbacks(window);
+		glfwDestroyWindow(window);
+
+		// Terminate GLFW and free the error callback
+		glfwTerminate();
+		glfwSetErrorCallback(null).free();
 	}
 
-	static class KeyCallBack implements GLFWKeyCallbackI {
+	private BulletSurvive() {
+		super();
+	}
+
+	class KeyCallBack implements GLFWKeyCallbackI {
 		public void invoke(long window, int key, int scancode, int action, int mods) {
+			// yes lets put dense key codes into a heap hash map managed by java
+			if(action == GLFW_PRESS) {
+				key_map.put(key, true);
+			} else if(action == GLFW_RELEASE) {
+				key_map.put(key, false);
+			}
+
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, true);
 		}
