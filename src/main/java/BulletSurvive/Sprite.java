@@ -94,7 +94,7 @@ public class Sprite implements AutoCloseable {
 		Utils.checkGlErrors();
 
 		// Pass down base shader program here
-		int program = BulletSurvive.getInstance().getBaseShader().getShaderProgram();
+		int program = BulletSurvive.gameInstance().getBaseShader().getShaderProgram();
 
 		// Set layout stuff
 		int pos = glGetAttribLocation(program, "position");
@@ -160,7 +160,7 @@ public class Sprite implements AutoCloseable {
 		// Upload uniforms
 
 		// Pixel matrix
-		glUniformMatrix4fv(BulletSurvive.getInstance().getBaseShader().getPixelUniform(), false, BulletSurvive.getInstance().getPixelMatrix().get(float_buf));
+		glUniformMatrix4fv(BulletSurvive.gameInstance().getBaseShader().getPixelUniform(), false, BulletSurvive.gameInstance().getPixelMatrix().get(float_buf));
 
 		// Transform matrix for given object
 		temp_mat.identity()
@@ -168,7 +168,7 @@ public class Sprite implements AutoCloseable {
 				.mulAffine(this.imgScale)
 				.scale(scale, scale, 1)
 				.rotateAffine(angle, 0, 0, 1);
-		glUniformMatrix4fv(BulletSurvive.getInstance().getBaseShader().getTransformUniform(), false, temp_mat.get(float_buf));
+		glUniformMatrix4fv(BulletSurvive.gameInstance().getBaseShader().getTransformUniform(), false, temp_mat.get(float_buf));
 
 		// Bind VAO
 		glBindVertexArray(getVao());

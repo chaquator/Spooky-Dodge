@@ -49,9 +49,13 @@ public class BulletSurvive {
 	 *
 	 * @return instance
 	 */
-	public static BulletSurvive getInstance() {
+	public static BulletSurvive gameInstance() {
 		if (instance == null) instance = new BulletSurvive();
 		return instance;
+	}
+
+	public static ILevel getLevel() {
+		return gameInstance().level;
 	}
 
 	/**
@@ -89,7 +93,7 @@ public class BulletSurvive {
 	}
 
 	public static void main(String[] args) {
-		BulletSurvive.getInstance().run();
+		BulletSurvive.gameInstance().run();
 	}
 
 	public void run() {
