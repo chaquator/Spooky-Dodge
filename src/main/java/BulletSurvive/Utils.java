@@ -8,11 +8,11 @@ import static org.lwjgl.opengl.GL33.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
 public class Utils {
+	public static Vector2f temp_v2f = new Vector2f();
 	public static Matrix4f temp_m4f = new Matrix4f();
 	public static FloatBuffer temp_flbf;
 
 	public static void initTemp() {
-		temp_m4f = new Matrix4f();
 		temp_flbf = memAllocFloat(16);
 	}
 

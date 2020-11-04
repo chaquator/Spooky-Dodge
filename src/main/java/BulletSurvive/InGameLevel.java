@@ -1,6 +1,6 @@
 package BulletSurvive;
 
-public class InGameLevel implements Level{
+public class InGameLevel implements ILevel {
 
 	// Entities
 	Player ply;

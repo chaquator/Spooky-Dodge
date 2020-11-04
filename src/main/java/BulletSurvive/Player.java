@@ -1,11 +1,10 @@
 package BulletSurvive;
 
-import java.lang.Math;
 import org.joml.*;
 
 import static org.lwjgl.glfw.GLFW.*;
 
-public class Player implements Entity, AutoCloseable {
+public class Player implements IEntity, IPos, AutoCloseable {
 	Sprite playerSprite;
 	Vector2f mov = new Vector2f();
 	Vector2f pos = new Vector2f();
@@ -14,6 +13,11 @@ public class Player implements Entity, AutoCloseable {
 
 	public Player() {
 		playerSprite = new Sprite("assets/chaq.png");
+	}
+
+	@Override
+	public Vector2f pos() {
+		return this.pos;
 	}
 
 	@Override
@@ -31,7 +35,7 @@ public class Player implements Entity, AutoCloseable {
 
 	@Override
 	public void render(float dt) {
-		playerSprite.draw(pos, 0, 1, Utils.temp_m4f, Utils.temp_flbf);
+		playerSprite.draw(pos, 0, 1f, Utils.temp_m4f, Utils.temp_flbf);
 	}
 
 	@Override

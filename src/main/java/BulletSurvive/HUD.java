@@ -1,6 +1,6 @@
 package BulletSurvive;
 
-public class HUD implements Entity {
+public class HUD implements IEntity {
 	@Override
 	public void tick(float dt) {
 

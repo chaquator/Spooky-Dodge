@@ -1,6 +1,6 @@
 package BulletSurvive;
 
-public class Bullets implements Entity{
+public class Bullets implements IEntity {
 	@Override
 	public void tick(float dt) {
 

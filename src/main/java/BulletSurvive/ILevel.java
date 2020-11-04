@@ -1,6 +1,6 @@
 package BulletSurvive;
 
-public interface Level {
+public interface ILevel {
 	/**
 	 * Advances the state of the level. Passed in dt which is change in time since last tick.
 	 * In this method you should call the tick methods of all entities.

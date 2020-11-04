@@ -1,7 +1,5 @@
 package BulletSurvive;
 
-import java.lang.Math;
-
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
@@ -26,7 +24,7 @@ public class BulletSurvive {
 	private long window;
 
 	private Shader base_shader;
-	private Level level;
+	private ILevel level;
 
 	// Timers
 	private final Timer game_timer = new Timer();
