@@ -1,7 +1,5 @@
 package BulletSurvive;
 
-import java.lang.Math;
-
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 import org.lwjgl.system.*;
@@ -26,7 +24,7 @@ public class BulletSurvive {
 	private long window;
 
 	private Shader base_shader;
-	private Level level;
+	private ILevel level;
 
 	// Timers
 	private final Timer game_timer = new Timer();
@@ -51,9 +49,13 @@ public class BulletSurvive {
 	 *
 	 * @return instance
 	 */
-	public static BulletSurvive getInstance() {
+	public static BulletSurvive gameInstance() {
 		if (instance == null) instance = new BulletSurvive();
 		return instance;
+	}
+
+	public static ILevel getLevel() {
+		return gameInstance().level;
 	}
 
 	/**
@@ -91,7 +93,7 @@ public class BulletSurvive {
 	}
 
 	public static void main(String[] args) {
-		BulletSurvive.getInstance().run();
+		BulletSurvive.gameInstance().run();
 	}
 
 	public void run() {
