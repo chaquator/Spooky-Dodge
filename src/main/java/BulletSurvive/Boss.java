@@ -33,6 +33,6 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	@Override
 	public void close() {
-
+		bossSprite.close();
 	}
 }
