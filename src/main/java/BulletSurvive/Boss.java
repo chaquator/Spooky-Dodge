@@ -1,6 +1,9 @@
 package BulletSurvive;
 
 import org.joml.*;
+import org.lwjgl.system.*;
+
+import java.nio.*;
 
 public class Boss implements IEntity, IPos, AutoCloseable {
 	Vector2f pos = new Vector2f();
@@ -8,11 +11,20 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	Bullets bullets;
 
+	static final float bullet_speed = 1024.f; // bullet speed in pixels per second
+
 	public Boss() {
 		bossSprite = new Sprite("assets/sample.png");
 		bullets = new Bullets();
 
 		pos.set(0, 256);
+	}
+
+	// Shoots at direction from boss's position
+	public void shootAt(Vector2f dir) {
+		dir.mul(bullet_speed);
+		bullets.addBullet(this.pos, dir);
+		dir.div(bullet_speed);
 	}
 
 	@Override
@@ -34,5 +46,6 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 	@Override
 	public void close() {
 		bossSprite.close();
+		bullets.close();
 	}
 }
