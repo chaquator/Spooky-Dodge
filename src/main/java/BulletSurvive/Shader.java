@@ -31,7 +31,7 @@ public class Shader implements AutoCloseable {
 		this.vert_i = glCreateShader(GL_VERTEX_SHADER);
 		String vert_src;
 		try {
-			vert_src = Files.readString(Paths.get(vert_f));
+			vert_src = new String(Files.readAllBytes(Paths.get(vert_f)));
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("File not found: %s", vert_f));
 		}
@@ -48,7 +48,7 @@ public class Shader implements AutoCloseable {
 		this.frag_i = glCreateShader(GL_FRAGMENT_SHADER);
 		String frag_src;
 		try {
-			frag_src = Files.readString(Paths.get(frag_f));
+			frag_src = new String(Files.readAllBytes(Paths.get(frag_f)));
 		} catch (IOException e) {
 			throw new RuntimeException(String.format("File not found: %s", frag_f));
 		}

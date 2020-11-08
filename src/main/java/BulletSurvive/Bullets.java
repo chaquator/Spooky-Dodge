@@ -53,7 +53,9 @@ public class Bullets implements IEntity, AutoCloseable {
 	public void removeBullet(int index) {
 		bullet_vacancies.add(index);
 
-		bullet_buf.put(baseIndex(index), bullet_empty);
+		bullet_buf.position(baseIndex(index));
+		bullet_buf.put(bullet_empty);
+		bullet_buf.position(0);
 	}
 
 	private int bulletVacancy() {
