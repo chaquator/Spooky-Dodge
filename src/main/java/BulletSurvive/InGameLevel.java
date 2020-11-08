@@ -47,5 +47,6 @@ public class InGameLevel implements ILevel {
 	@Override
 	public void end() {
 		ply.close();
+		boss.close();
 	}
 }
