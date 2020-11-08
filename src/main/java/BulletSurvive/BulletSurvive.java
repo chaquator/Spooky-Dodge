@@ -85,6 +85,7 @@ public class BulletSurvive {
 
 	/**
 	 * Query game instance for current key state
+	 *
 	 * @param key GLFW Key
 	 * @return true if key is down, false if up
 	 */
@@ -93,7 +94,7 @@ public class BulletSurvive {
 	}
 
 	public static void main(String[] args) {
-		BulletSurvive.gameInstance().run();
+		gameInstance().run();
 	}
 
 	public void run() {
@@ -185,7 +186,7 @@ public class BulletSurvive {
 		Utils.initTemp();
 	}
 
-	private void render(float dt) {
+	private void gameRender(float dt) {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // clear the framebuffer
 
 		level.render(dt);
@@ -203,14 +204,17 @@ public class BulletSurvive {
 
 		// Update inputs at 240 Hz
 		float game_elapsed;
+		float render_time;
 		float game_acc = 0f;
 		float game_interval = 1f / 240;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
 
-			// Update game at fixed rate
 			game_elapsed = game_timer.getElapsedTime();
+			render_time = render_timer.getElapsedTime();
+
+			// Update game at fixed rate
 			game_acc += game_elapsed;
 			while (game_acc >= game_interval) {
 				gameUpdate(game_interval);
@@ -218,8 +222,7 @@ public class BulletSurvive {
 			}
 
 			// Render game
-			float render_time = render_timer.getElapsedTime();
-			render(render_time);
+			gameRender(render_time);
 
 			Utils.checkGlErrors();
 		}
@@ -249,9 +252,9 @@ public class BulletSurvive {
 	class KeyCallBack implements GLFWKeyCallbackI {
 		public void invoke(long window, int key, int scancode, int action, int mods) {
 			// yes lets put dense key codes into a heap hash map managed by java
-			if(action == GLFW_PRESS) {
+			if (action == GLFW_PRESS) {
 				key_map.put(key, true);
-			} else if(action == GLFW_RELEASE) {
+			} else if (action == GLFW_RELEASE) {
 				key_map.put(key, false);
 			}
 
