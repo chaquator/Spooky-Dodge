@@ -13,7 +13,7 @@ public class Player implements IEntity, IPos, AutoCloseable {
 	float speed = 1024.f;
 
 	public Player() {
-		playerSprite = new Sprite("assets/chaq.png");
+		playerSprite = new Sprite("assets/ghost.png");
 	}
 
 	@Override

@@ -26,7 +26,7 @@ public class InGameLevel implements ILevel {
 
 		acc += timer.getElapsedTime();
 		// Shoot a bullet once per second
-		float interval = 1.f/512;
+		float interval = 100.f/512;
 		while (acc > interval) {
 			acc -= interval;
 

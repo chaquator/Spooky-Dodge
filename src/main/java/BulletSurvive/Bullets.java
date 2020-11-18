@@ -25,7 +25,7 @@ public class Bullets implements IEntity, AutoCloseable {
 	public Bullets() {
 		initBuffers();
 
-		bulletSprite = new Sprite("assets/candy_corn.png");
+		bulletSprite = new Sprite("assets/bullet.png");
 	}
 
 	private void initBuffers() {
