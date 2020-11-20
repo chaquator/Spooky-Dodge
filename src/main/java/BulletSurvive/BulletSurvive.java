@@ -13,7 +13,7 @@ import java.util.HashMap;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL14.*;
-import static org.lwjgl.stb.STBImage.stbi_load;
+import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -206,6 +206,8 @@ public class BulletSurvive {
 			gimg.height(ph.get());
 			gimg.pixels(image);
 			glfwSetWindowIcon(this.window, gimg);
+
+			stbi_image_free(image);
 		}
 	}
 
@@ -225,11 +227,11 @@ public class BulletSurvive {
 		game_timer.init();
 		render_timer.init();
 
-		// Update inputs at 240 Hz
+		// Update inputs at 256 Hz
 		float game_elapsed;
 		float render_time;
 		float game_acc = 0f;
-		float game_interval = 1f / 240;
+		float game_interval = 1f / 256;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
