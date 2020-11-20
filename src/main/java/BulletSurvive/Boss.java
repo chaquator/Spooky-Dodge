@@ -11,13 +11,13 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	Bullets bullets;
 
-	static final float bullet_speed = 1024.f; // bullet speed in pixels per second
+	static final float bullet_speed = 368.f ; // bullet speed in pixels per second
 
 	public Boss() {
-		bossSprite = new Sprite("assets/sample.png");
+		bossSprite = new Sprite("assets/witch.png");
 		bullets = new Bullets();
 
-		pos.set(0, 256);
+		pos.set(0, 384);
 	}
 
 	// Shoots at direction from boss's position
@@ -39,8 +39,8 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	@Override
 	public void render(float dt) {
-		bossSprite.draw(pos, 0, 0.25f, Utils.temp_m4f, Utils.temp_flbf);
 		bullets.render(dt);
+		bossSprite.draw(pos, 0, 1.f, Utils.temp_m4f, Utils.temp_flbf);
 	}
 
 	@Override

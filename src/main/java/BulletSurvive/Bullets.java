@@ -152,7 +152,7 @@ public class Bullets implements IEntity, AutoCloseable {
 
 			Vector2f pos = Utils.temp_v2f_0.set(pos_ind, bullet_buf);
 
-			bulletSprite.draw(pos, angle, 0.25f, Utils.temp_m4f, Utils.temp_flbf);
+			bulletSprite.draw(pos, angle, 1.f, Utils.temp_m4f, Utils.temp_flbf);
 		}
 	}
 

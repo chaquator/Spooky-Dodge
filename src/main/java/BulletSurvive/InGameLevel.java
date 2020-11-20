@@ -7,6 +7,7 @@ public class InGameLevel implements ILevel {
 	// Entities
 	Player ply;
 	Boss boss;
+	HitCircle hitCircle;
 
 	// Level timer
 	Timer timer = new Timer();
@@ -15,6 +16,7 @@ public class InGameLevel implements ILevel {
 	public InGameLevel() {
 		ply = new Player();
 		boss = new Boss();
+		hitCircle = new HitCircle();
 
 		timer.init();
 	}
@@ -22,11 +24,12 @@ public class InGameLevel implements ILevel {
 	@Override
 	public void tick(float dt) {
 		ply.tick(dt);
+		hitCircle.setPos(ply.pos());
 		boss.tick(dt);
 
 		acc += timer.getElapsedTime();
 		// Shoot a bullet once per second
-		float interval = 1.f/512;
+		float interval = 1.f/4;
 		while (acc > interval) {
 			acc -= interval;
 
@@ -42,6 +45,7 @@ public class InGameLevel implements ILevel {
 	public void render(float dt) {
 		ply.render(dt);
 		boss.render(dt);
+		hitCircle.render(dt);
 	}
 
 	@Override

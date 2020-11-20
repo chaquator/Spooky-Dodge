@@ -8,12 +8,13 @@ import static BulletSurvive.BulletSurvive.*;
 public class Player implements IEntity, IPos, AutoCloseable {
 	Sprite playerSprite;
 	Vector2f mov = new Vector2f();
-	Vector2f pos = new Vector2f();
+	Vector2f pos;
 
-	float speed = 1024.f;
+	float speed = 400.f;
 
 	public Player() {
-		playerSprite = new Sprite("assets/chaq.png");
+		playerSprite = new Sprite("assets/ghost.png");
+		pos = new Vector2f(0, -256);
 	}
 
 	@Override
@@ -36,7 +37,7 @@ public class Player implements IEntity, IPos, AutoCloseable {
 
 	@Override
 	public void render(float dt) {
-		playerSprite.draw(pos, 0, 0.5f, Utils.temp_m4f, Utils.temp_flbf);
+		playerSprite.draw(pos, 0, 1.f, Utils.temp_m4f, Utils.temp_flbf);
 	}
 
 	@Override
