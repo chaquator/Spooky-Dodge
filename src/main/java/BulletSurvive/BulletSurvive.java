@@ -151,6 +151,8 @@ public class BulletSurvive {
 			);
 		}
 
+		initWindowIcon();
+
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
 
@@ -185,6 +187,26 @@ public class BulletSurvive {
 
 		// Utility temporaries
 		Utils.initTemp();
+	}
+
+	private void initWindowIcon() {
+		try(MemoryStack stack = stackPush()) {
+			IntBuffer pw = stack.mallocInt(1);
+			IntBuffer ph = stack.mallocInt(1);
+			IntBuffer ch = stack.mallocInt(1);
+
+			ByteBuffer image;
+			String icon = "assets/icon.png";
+			image = stbi_load(icon, pw, ph, ch, 4);
+
+			if (image == null) throw new RuntimeException(String.format("Image not found: %s", icon));
+
+			GLFWImage.Buffer gimg = GLFWImage.callocStack(1, stack);
+			gimg.width(pw.get());
+			gimg.height(ph.get());
+			gimg.pixels(image);
+			glfwSetWindowIcon(this.window, gimg);
+		}
 	}
 
 	private void gameRender(float dt) {
