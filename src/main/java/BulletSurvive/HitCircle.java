@@ -15,6 +15,10 @@ public class HitCircle implements IEntity, IPos, AutoCloseable {
 		this.pos.set(pos);
 	}
 
+	public float radius() {
+		return 16.f;
+	}
+
 	@Override
 	public void tick(float dt) {
 	}
@@ -30,7 +34,7 @@ public class HitCircle implements IEntity, IPos, AutoCloseable {
 	}
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		hitSprite.close();
 	}
 }

@@ -254,9 +254,8 @@ public class BulletSurvive {
 	}
 
 	private void cleanup() {
-		this.base_shader.close();
-
 		level.end();
+		this.base_shader.close();
 
 		// Free utilitiy temps
 		Utils.cleanTemp();

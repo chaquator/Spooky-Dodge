@@ -1,6 +1,6 @@
 package BulletSurvive;
 
-import org.joml.Vector2f;
+import java.lang.Math;
 
 public class InGameLevel implements ILevel {
 
@@ -12,6 +12,8 @@ public class InGameLevel implements ILevel {
 	// Level timer
 	Timer timer = new Timer();
 	float acc;
+
+	float ph = 0.f;
 
 	public InGameLevel() {
 		ply = new Player();
@@ -29,15 +31,17 @@ public class InGameLevel implements ILevel {
 
 		acc += timer.getElapsedTime();
 		// Shoot a bullet once per second
-		float interval = 1.f/4;
+		float interval = 1.f / 16;
 		while (acc > interval) {
 			acc -= interval;
 
-			Vector2f tmp = Utils.temp_v2f_0;
+			/*Vector2f tmp = Utils.temp_v2f_0;
 			tmp.set(ply.pos())
 					.sub(boss.pos())
 					.normalize();
-			boss.shootAt(tmp);
+			boss.shootAt(tmp);*/
+			ph = (ph + (float)Math.PI * (2.f/60.f)) % ((float)Math.PI * 2.f);
+			boss.shootCircle(10, ph);
 		}
 	}
 
@@ -52,5 +56,6 @@ public class InGameLevel implements ILevel {
 	public void end() {
 		ply.close();
 		boss.close();
+		hitCircle.close();
 	}
 }

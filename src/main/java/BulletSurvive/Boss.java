@@ -1,17 +1,21 @@
 package BulletSurvive;
 
 import org.joml.*;
-import org.lwjgl.system.*;
+import java.lang.Math;
 
 import java.nio.*;
 
 public class Boss implements IEntity, IPos, AutoCloseable {
 	Vector2f pos = new Vector2f();
+
+	Matrix2f tmp_m2f = new Matrix2f();
+	Vector2f tmp_v2 = new Vector2f();
+
 	Sprite bossSprite;
 
 	Bullets bullets;
 
-	static final float bullet_speed = 368.f ; // bullet speed in pixels per second
+	static final float bullet_speed = 336.f; // bullet speed in pixels per second
 
 	public Boss() {
 		bossSprite = new Sprite("assets/witch.png");
@@ -20,11 +24,38 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 		pos.set(0, 384);
 	}
 
-	// Shoots at direction from boss's position
+	/**
+	 * Shoots at a direction from boss's position
+	 *
+	 * @param dir normalized direciton to shoot in
+	 */
 	public void shootAt(Vector2f dir) {
 		dir.mul(bullet_speed);
 		bullets.addBullet(this.pos, dir);
 		dir.div(bullet_speed);
+	}
+
+	/**
+	 * Shoots in a circle around self
+	 *
+	 * @param count number of bullets to surround circle
+	 * @param phase phase of first bullet (1st bullet is to the right)
+	 */
+	public void shootCircle(int count, float phase) {
+		// Unit velocity
+		tmp_v2.set(bullet_speed, 0);
+
+		// Apply Phase
+		tmp_m2f.identity().rotate(phase).transform(tmp_v2);
+
+		// Calculate Interval
+		tmp_m2f.identity().rotate(((float) Math.PI * 2.f) / (float) count);
+
+		// Add bullets
+		for (int i = 0; i < count; ++i) {
+			bullets.addBullet(this.pos, tmp_v2);
+			tmp_m2f.transform(tmp_v2);
+		}
 	}
 
 	@Override

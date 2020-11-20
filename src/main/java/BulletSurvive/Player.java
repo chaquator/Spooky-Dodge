@@ -10,7 +10,7 @@ public class Player implements IEntity, IPos, AutoCloseable {
 	Vector2f mov = new Vector2f();
 	Vector2f pos;
 
-	float speed = 400.f;
+	float speed = 368.f;
 
 	public Player() {
 		playerSprite = new Sprite("assets/ghost.png");
