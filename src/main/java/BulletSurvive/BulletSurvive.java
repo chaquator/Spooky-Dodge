@@ -132,25 +132,6 @@ public class BulletSurvive {
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, kcb);
 
-		// Get the thread stack and push a new frame
-		try (MemoryStack stack = stackPush()) {
-			IntBuffer pWidth = stack.mallocInt(1); // int*
-			IntBuffer pHeight = stack.mallocInt(1); // int*
-
-			// Get the window size passed to glfwCreateWindow
-			glfwGetWindowSize(window, pWidth, pHeight);
-
-			// Get the resolution of the primary monitor
-			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-			// Center the window
-			glfwSetWindowPos(
-					window,
-					(vidmode.width() - pWidth.get(0)) / 2,
-					(vidmode.height() - pHeight.get(0)) / 2
-			);
-		}
-
 		initWindowIcon();
 
 		// Make the OpenGL context current
@@ -180,7 +161,7 @@ public class BulletSurvive {
 		base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
 
 		// Set pixel matrix
-		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
+		pixelMatrix = new Matrix4f().scale(1 / (getDimensions().x / 2.f), 1 / (getDimensions().y / 2.f), 1);
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
@@ -190,7 +171,7 @@ public class BulletSurvive {
 	}
 
 	private void initWindowIcon() {
-		try(MemoryStack stack = stackPush()) {
+		try (MemoryStack stack = stackPush()) {
 			IntBuffer pw = stack.mallocInt(1);
 			IntBuffer ph = stack.mallocInt(1);
 			IntBuffer ch = stack.mallocInt(1);

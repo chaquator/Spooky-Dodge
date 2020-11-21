@@ -1,6 +1,7 @@
 package BulletSurvive;
 
 import org.joml.*;
+
 import java.lang.Math;
 
 import java.nio.*;
@@ -15,7 +16,7 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	Bullets bullets;
 
-	static final float bullet_speed = 192.f; // bullet speed in pixels per second
+	static final float bullet_speed = 96.f; // bullet speed in pixels per second
 
 	public Boss() {
 		bossSprite = new Sprite("assets/witch.png");

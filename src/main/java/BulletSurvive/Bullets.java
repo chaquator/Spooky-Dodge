@@ -29,7 +29,7 @@ public class Bullets implements IEntity, AutoCloseable {
 	}
 
 	private float radius() {
-		return 24.f;
+		return 12.f;
 	}
 
 	private void initBuffers() {
@@ -141,10 +141,10 @@ public class Bullets implements IEntity, AutoCloseable {
 
 			Vector2fc dim = gameInstance().getDimensions();
 			int margin = 64;
-			if (pos.x >= (dim.x() + margin) ||
-					pos.x <= -(dim.x() + margin) ||
-					pos.y >= (dim.y() + margin) ||
-					pos.y <= -(dim.y() + margin)) {
+			if (pos.x >= (dim.x() / 2.f + margin) ||
+					pos.x <= -(dim.x() / 2.f + margin) ||
+					pos.y >= (dim.y() / 2.f + margin) ||
+					pos.y <= -(dim.y() / 2.f + margin)) {
 				removeBullet(i);
 				continue;
 			}
