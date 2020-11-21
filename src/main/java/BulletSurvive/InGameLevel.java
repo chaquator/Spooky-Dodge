@@ -1,6 +1,7 @@
 package BulletSurvive;
 
-import java.lang.Math;
+import org.joml.Math;
+import static BulletSurvive.BulletSurvive.*;
 
 public class InGameLevel implements ILevel {
 
@@ -30,7 +31,7 @@ public class InGameLevel implements ILevel {
 		boss.tick(dt);
 
 		if (boss.bulletCollide(ply.pos(), ply.radius())) {
-			plyGhost.pos.add(0, 10000000);
+			gameInstance().signalLevel(LEVEL.GAME_OVER);
 		}
 
 		acc += timer.getElapsedTime();

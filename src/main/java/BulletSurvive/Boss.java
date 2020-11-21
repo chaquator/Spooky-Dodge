@@ -2,7 +2,7 @@ package BulletSurvive;
 
 import org.joml.*;
 
-import java.lang.Math;
+import org.joml.Math;
 
 import java.nio.*;
 

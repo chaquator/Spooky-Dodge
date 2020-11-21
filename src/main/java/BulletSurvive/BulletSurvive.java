@@ -27,6 +27,12 @@ public class BulletSurvive {
 	private Shader base_shader;
 	private ILevel level;
 
+	public enum LEVEL {
+		IN_GAME, GAME_OVER
+	}
+	private LEVEL level_no = LEVEL.IN_GAME;
+	private boolean level_signal = false;
+
 	// Timers
 	private final Timer game_timer = new Timer();
 	private final Timer render_timer = new Timer();
@@ -34,6 +40,7 @@ public class BulletSurvive {
 	// Key input
 	private final KeyCallBack kcb = new KeyCallBack();
 	private final HashMap<Integer, Boolean> key_map = new HashMap<>();
+
 
 	/**
 	 * Dimensions vector -- window dimensions
@@ -96,6 +103,18 @@ public class BulletSurvive {
 
 	public static void main(String[] args) {
 		gameInstance().run();
+	}
+
+	/**
+	 * Signals to game instance to change level at the end of loop
+	 *
+	 * @param level index of level to change to.
+	 *              0 - in-game
+	 *              1 - game-over
+	 */
+	public void signalLevel(LEVEL level) {
+		this.level_no = level;
+		this.level_signal = true;
 	}
 
 	public void run() {
@@ -231,6 +250,22 @@ public class BulletSurvive {
 			gameRender(render_time);
 
 			Utils.checkGlErrors();
+
+			// Check for level change
+			if (this.level_signal) {
+				this.level_signal = false;
+				this.level.end();
+				switch (this.level_no) {
+					// In-game
+					case IN_GAME:
+						this.level = new InGameLevel();
+						break;
+					// Game over
+					case GAME_OVER:
+						this.level = new GameOver();
+						break;
+				}
+			}
 		}
 	}
 
