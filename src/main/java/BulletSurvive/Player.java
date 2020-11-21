@@ -17,6 +17,10 @@ public class Player implements IEntity, IPos, AutoCloseable {
 		pos = new Vector2f(0, -256);
 	}
 
+	public float radius() {
+		return 12.f;
+	}
+
 	@Override
 	public Vector2f pos() {
 		return this.pos;

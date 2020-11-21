@@ -15,13 +15,13 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	Bullets bullets;
 
-	static final float bullet_speed = 208.f; // bullet speed in pixels per second
+	static final float bullet_speed = 192.f; // bullet speed in pixels per second
 
 	public Boss() {
 		bossSprite = new Sprite("assets/witch.png");
 		bullets = new Bullets();
 
-		pos.set(0, 384);
+		pos.set(0, 0);
 	}
 
 	/**
@@ -56,6 +56,10 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 			bullets.addBullet(this.pos, tmp_v2);
 			tmp_m2f.transform(tmp_v2);
 		}
+	}
+
+	public boolean bulletCollide(Vector2fc pos, float r) {
+		return bullets.bulletsColliding(pos, r);
 	}
 
 	@Override

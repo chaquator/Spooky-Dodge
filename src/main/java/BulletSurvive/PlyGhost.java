@@ -15,10 +15,6 @@ public class PlyGhost implements IEntity, IPos, AutoCloseable {
 		this.pos.set(pos);
 	}
 
-	public float radius() {
-		return 8.f;
-	}
-
 	@Override
 	public void tick(float dt) {
 	}

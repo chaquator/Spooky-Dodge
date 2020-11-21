@@ -30,11 +30,9 @@ public class InGameLevel implements ILevel {
 		boss.tick(dt);
 
 		acc += timer.getElapsedTime();
-
 		float fps = 0.7f; // flips per sec
 		float inv = (float)Math.PI * (2.f*fps);
 		ph = (ph + (dt*inv)) % ((float)Math.PI * 2.f);
-
 		float interval = 1.f / 20;
 		while (acc > interval) {
 			acc -= interval;
