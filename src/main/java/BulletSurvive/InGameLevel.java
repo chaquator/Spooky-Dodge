@@ -7,7 +7,7 @@ public class InGameLevel implements ILevel {
 	// Entities
 	Player ply;
 	Boss boss;
-	HitCircle hitCircle;
+	PlyGhost plyGhost;
 
 	// Level timer
 	Timer timer = new Timer();
@@ -18,7 +18,7 @@ public class InGameLevel implements ILevel {
 	public InGameLevel() {
 		ply = new Player();
 		boss = new Boss();
-		hitCircle = new HitCircle();
+		plyGhost = new PlyGhost();
 
 		timer.init();
 	}
@@ -26,36 +26,34 @@ public class InGameLevel implements ILevel {
 	@Override
 	public void tick(float dt) {
 		ply.tick(dt);
-		hitCircle.setPos(ply.pos());
+		plyGhost.setPos(ply.pos());
 		boss.tick(dt);
 
 		acc += timer.getElapsedTime();
-		// Shoot a bullet once per second
-		float interval = 1.f / 16;
+
+		float fps = 0.7f; // flips per sec
+		float inv = (float)Math.PI * (2.f*fps);
+		ph = (ph + (dt*inv)) % ((float)Math.PI * 2.f);
+
+		float interval = 1.f / 20;
 		while (acc > interval) {
 			acc -= interval;
 
-			/*Vector2f tmp = Utils.temp_v2f_0;
-			tmp.set(ply.pos())
-					.sub(boss.pos())
-					.normalize();
-			boss.shootAt(tmp);*/
-			ph = (ph + (float)Math.PI * (2.f/60.f)) % ((float)Math.PI * 2.f);
-			boss.shootCircle(10, ph);
+			boss.shootCircle(3, ph);
 		}
 	}
 
 	@Override
 	public void render(float dt) {
-		ply.render(dt);
+		plyGhost.render(dt);
 		boss.render(dt);
-		hitCircle.render(dt);
+		ply.render(dt);
 	}
 
 	@Override
 	public void end() {
 		ply.close();
 		boss.close();
-		hitCircle.close();
+		plyGhost.close();
 	}
 }

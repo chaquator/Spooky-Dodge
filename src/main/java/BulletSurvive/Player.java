@@ -10,10 +10,10 @@ public class Player implements IEntity, IPos, AutoCloseable {
 	Vector2f mov = new Vector2f();
 	Vector2f pos;
 
-	float speed = 368.f;
+	float speed = 192.f;
 
 	public Player() {
-		playerSprite = new Sprite("assets/ghost.png");
+		playerSprite = new Sprite("assets/hit.png");
 		pos = new Vector2f(0, -256);
 	}
 
@@ -32,6 +32,12 @@ public class Player implements IEntity, IPos, AutoCloseable {
 		if (mov.lengthSquared() != 0) {
 			mov.normalize().mul(speed*dt);
 			pos.add(mov);
+
+			Vector2fc dim = gameInstance().getDimensions();
+			if(pos.x() >= dim.x()) pos.set(dim.x(), pos.y());
+			if(pos.x() <= -dim.x()) pos.set(-dim.x(), pos.y());
+			if(pos.y() >= dim.y()) pos.set(pos.x(), dim.y());
+			if(pos.y() <= -dim.y()) pos.set(pos.x(), -dim.y());
 		}
 	}
 

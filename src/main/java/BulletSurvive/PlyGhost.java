@@ -2,13 +2,13 @@ package BulletSurvive;
 
 import org.joml.*;
 
-public class HitCircle implements IEntity, IPos, AutoCloseable {
+public class PlyGhost implements IEntity, IPos, AutoCloseable {
 	Sprite hitSprite;
 
 	Vector2f pos = new Vector2f();
 
-	public HitCircle() {
-		hitSprite = new Sprite("assets/hit.png");
+	public PlyGhost() {
+		hitSprite = new Sprite("assets/ghost.png");
 	}
 
 	public void setPos(Vector2fc pos) {
@@ -16,7 +16,7 @@ public class HitCircle implements IEntity, IPos, AutoCloseable {
 	}
 
 	public float radius() {
-		return 16.f;
+		return 8.f;
 	}
 
 	@Override

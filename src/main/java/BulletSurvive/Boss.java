@@ -15,7 +15,7 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 
 	Bullets bullets;
 
-	static final float bullet_speed = 336.f; // bullet speed in pixels per second
+	static final float bullet_speed = 208.f; // bullet speed in pixels per second
 
 	public Boss() {
 		bossSprite = new Sprite("assets/witch.png");

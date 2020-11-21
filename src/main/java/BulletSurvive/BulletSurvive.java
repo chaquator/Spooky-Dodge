@@ -168,7 +168,7 @@ public class BulletSurvive {
 		Utils.checkGlErrors();
 
 		// Set the clear color
-		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+		glClearColor(0.0125f, 0.0125f, 0.0125f, 0.0f);
 		Utils.checkGlErrors();
 
 		// Alpha blending
