@@ -5,7 +5,7 @@ import org.joml.Math;
 import static org.lwjgl.glfw.GLFW.*;
 import static BulletSurvive.BulletSurvive.*;
 
-public class InGameLevel implements ILevel {
+public class InGame implements ILevel {
 
 	// Entities
 	Player ply;
@@ -13,7 +13,7 @@ public class InGameLevel implements ILevel {
 	PlyGhost plyGhost;
 
 	private final char[] text = {'P', 'A', 'U', 'S', 'E', 'D'};
-	private final Letter[] text_ent = new Letter[text.length];
+	private final Letter[] text_ents = new Letter[text.length];
 
 	private enum STATE {
 		PAUSED_0, PAUSED_1, PLAY_0, PLAY_1;
@@ -28,7 +28,7 @@ public class InGameLevel implements ILevel {
 	STATE state = STATE.PLAY_0;
 	int pause = GLFW_KEY_P;
 
-	public InGameLevel() {
+	public InGame() {
 		ply = new Player();
 		boss = new Boss();
 		plyGhost = new PlyGhost();
@@ -37,8 +37,8 @@ public class InGameLevel implements ILevel {
 
 		float ph_in = (float) Math.PI * 1.f / 3.f;
 		for (int i = 0; i < text.length; ++i) {
-			Letter l = text_ent[i] = new Letter(text[i], ph_in * i);
-			float h_inv = 88.f;
+			Letter l = text_ents[i] = new Letter(text[i], ph_in * i);
+			float h_inv = 128.f;
 			l.pos().set(-h_inv*2.5 + h_inv*i, 0);
 		}
 	}
@@ -84,7 +84,7 @@ public class InGameLevel implements ILevel {
 				break;
 			case PAUSED_0:
 			case PAUSED_1:
-				for (Letter l : text_ent) l.tick(dt);
+				for (Letter l : text_ents) l.tick(dt);
 				break;
 		}
 
@@ -104,7 +104,7 @@ public class InGameLevel implements ILevel {
 				plyGhost.render(dt);
 				boss.render(dt);
 				ply.render(dt);
-				for (Letter l : text_ent) l.render(dt);
+				for (Letter l : text_ents) l.render(dt);
 				break;
 		}
 	}
@@ -114,6 +114,6 @@ public class InGameLevel implements ILevel {
 		ply.close();
 		boss.close();
 		plyGhost.close();
-		for (Letter l : text_ent) l.close();
+		for (Letter l : text_ents) l.close();
 	}
 }

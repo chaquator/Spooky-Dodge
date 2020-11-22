@@ -28,7 +28,7 @@ public class BulletSurvive {
 	private ILevel level;
 
 	public enum LEVEL {
-		IN_GAME, GAME_OVER
+		TITLE, IN_GAME, GAME_OVER
 	}
 	private LEVEL level_no = LEVEL.IN_GAME;
 	private boolean level_signal = false;
@@ -118,7 +118,7 @@ public class BulletSurvive {
 	public void run() {
 		init();
 
-		level = new InGameLevel();
+		level = new TitleScreen();
 
 		loop();
 
@@ -254,9 +254,13 @@ public class BulletSurvive {
 				this.level_signal = false;
 				this.level.end();
 				switch (this.level_no) {
+					// Title screen
+					case TITLE:
+						this.level = new TitleScreen();
+						break;
 					// In-game
 					case IN_GAME:
-						this.level = new InGameLevel();
+						this.level = new InGame();
 						break;
 					// Game over
 					case GAME_OVER:
