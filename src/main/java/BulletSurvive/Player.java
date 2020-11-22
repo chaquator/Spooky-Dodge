@@ -18,7 +18,7 @@ public class Player implements IEntity, IPos, AutoCloseable {
 	}
 
 	public float radius() {
-		return 6.f;
+		return 5.5f;
 	}
 
 	@Override

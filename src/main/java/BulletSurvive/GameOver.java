@@ -16,10 +16,6 @@ public class GameOver implements ILevel {
 	 */
 	int state = 0;
 
-	// intervals
-	float v_int = 88.f;
-	float h_int = 120.f;
-
 	char[] letters = {'G', 'A', 'M', 'E', 'O', 'V', 'E', 'R'};
 	Letter[] letterEnts = new Letter[8];
 
@@ -31,11 +27,14 @@ public class GameOver implements ILevel {
 			Letter l = letterEnts[i] = new Letter(letters[i], ph_in * i);
 			int h_i = i % 4;
 			int v_i = i / 4;
+			// intervals
+			float v_int = 88.f;
+			float h_int = 120.f;
 			l.pos().set(-1.5 * h_int + h_int * h_i, v_int - 2 * v_int * v_i);
 		}
 	}
 
-	private void clk(float dt) {
+	private void clk() {
 		if (state == 0) {
 			if (!gameInstance().getKeyState(GLFW_KEY_ENTER)) state = 1;
 		} else if (state == 1) {
@@ -46,7 +45,7 @@ public class GameOver implements ILevel {
 	@Override
 	public void tick(float dt) {
 		for (Letter l : letterEnts) l.tick(dt);
-		clk(dt);
+		clk();
 	}
 
 	@Override
