@@ -25,7 +25,7 @@ public class Boss implements IEntity, IPos, AutoCloseable {
 	float state_acc = 0;
 	int bullet_count = 0;
 
-	enum STATE {
+	private enum STATE {
 		IDLE(0, 184, "IDLE", 0), SPREAD(0, 184, "SPREAD", 3.f / 7.f), SPIRAL(0, 0, "SPIRAL", 1.f / 15.f),
 		MOVE_BACK(0, 184, "MOVE BACK", 0), MOVE_SPREAD(0, 184, "MOVE SPREAD", 0), MOVE_SPIRAL(0, 0, "MOVE SPIRAL", 0);
 
