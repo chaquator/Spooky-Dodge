@@ -35,7 +35,7 @@ public class GameOver implements ILevel {
 		}
 	}
 
-	private void clk() {
+	private void clk(float dt) {
 		if (state == 0) {
 			if (!gameInstance().getKeyState(GLFW_KEY_ENTER)) state = 1;
 		} else if (state == 1) {
@@ -46,7 +46,7 @@ public class GameOver implements ILevel {
 	@Override
 	public void tick(float dt) {
 		for (Letter l : letterEnts) l.tick(dt);
-		clk();
+		clk(dt);
 	}
 
 	@Override

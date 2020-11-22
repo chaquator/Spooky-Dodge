@@ -108,9 +108,7 @@ public class BulletSurvive {
 	/**
 	 * Signals to game instance to change level at the end of loop
 	 *
-	 * @param level index of level to change to.
-	 *              0 - in-game
-	 *              1 - game-over
+	 * @param level enum of level to change to
 	 */
 	public void signalLevel(LEVEL level) {
 		this.level_no = level;
@@ -231,7 +229,7 @@ public class BulletSurvive {
 		float game_elapsed;
 		float render_time;
 		float game_acc = 0f;
-		float game_interval = 1f / 256;
+		float game_interval = 1.f / 256.f;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
