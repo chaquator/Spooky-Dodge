@@ -52,8 +52,8 @@ public abstract class ASprite implements AutoCloseable {
 		Utils.checkGlErrors();
 
 		// Texture filtering
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		Utils.checkGlErrors();
 	}
 
@@ -67,10 +67,10 @@ public abstract class ASprite implements AutoCloseable {
 		this.vbo = glGenBuffers();
 		float[] vertices = {
 				//  Position, Texcoords
-				-1.0f, 1.0f, 0.0f, 0.0f, // Top-left
-				1.0f, 1.0f, 1.0f, 0.0f, // Top-right
-				1.0f, -1.0f, 1.0f, 1.0f, // Bottom-right
-				-1.0f, -1.0f, 0.0f, 1.0f  // Bottom-left
+				-0.5f, 0.5f, 0.0f, 0.0f, // Top-left
+				0.5f, 0.5f, 1.0f, 0.0f, // Top-right
+				0.5f, -0.5f, 1.0f, 1.0f, // Bottom-right
+				-0.5f, -0.5f, 0.0f, 1.0f  // Bottom-left
 		};
 		glBindBuffer(GL_ARRAY_BUFFER, this.vbo);
 		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);

@@ -8,12 +8,17 @@ import static BulletSurvive.BulletSurvive.*;
 public class Player implements IEntity, IPos, AutoCloseable {
 	Sprite playerSprite;
 	Vector2f mov = new Vector2f();
-	Vector2f pos = new Vector2f();
+	Vector2f pos;
 
-	float speed = 1024.f;
+	float speed = 96.f;
 
 	public Player() {
-		playerSprite = new Sprite("assets/chaq.png");
+		playerSprite = new Sprite("assets/hit.png");
+		pos = new Vector2f(0, -256);
+	}
+
+	public float radius() {
+		return 6.f;
 	}
 
 	@Override
@@ -29,14 +34,20 @@ public class Player implements IEntity, IPos, AutoCloseable {
 		int D = gameInstance().getKeyState(GLFW_KEY_D) || gameInstance().getKeyState(GLFW_KEY_RIGHT) ? 1 : 0;
 		mov.set(D - A, W - S); // movement vector based off of keypresses
 		if (mov.lengthSquared() != 0) {
-			mov.normalize().mul(speed*dt);
+			mov.normalize().mul(speed * dt);
 			pos.add(mov);
+
+			Vector2fc dim = gameInstance().getDimensions();
+			if (pos.x() >= dim.x() / 2.f) pos.set(dim.x() / 2.f, pos.y());
+			if (pos.x() <= -dim.x() / 2.f) pos.set(-dim.x() / 2.f, pos.y());
+			if (pos.y() >= dim.y() / 2.f) pos.set(pos.x(), dim.y() / 2.f);
+			if (pos.y() <= -dim.y() / 2.f) pos.set(pos.x(), -dim.y() / 2.f);
 		}
 	}
 
 	@Override
 	public void render(float dt) {
-		playerSprite.draw(pos, 0, 0.5f, Utils.temp_m4f, Utils.temp_flbf);
+		playerSprite.draw(pos, 0, 1.f, Utils.temp_m4f, Utils.temp_flbf);
 	}
 
 	@Override

@@ -1,52 +1,45 @@
 package BulletSurvive;
 
-import org.joml.Vector2f;
+import org.joml.Math;
+import static BulletSurvive.BulletSurvive.*;
 
 public class InGameLevel implements ILevel {
 
 	// Entities
 	Player ply;
 	Boss boss;
-
-	// Level timer
-	Timer timer = new Timer();
-	float acc;
+	PlyGhost plyGhost;
 
 	public InGameLevel() {
 		ply = new Player();
 		boss = new Boss();
+		plyGhost = new PlyGhost();
 
-		timer.init();
+		boss.setPlyPosHandle(ply.pos());
 	}
 
 	@Override
 	public void tick(float dt) {
 		ply.tick(dt);
+		plyGhost.setPos(ply.pos());
 		boss.tick(dt);
 
-		acc += timer.getElapsedTime();
-		// Shoot a bullet once per second
-		float interval = 1.f/512;
-		while (acc > interval) {
-			acc -= interval;
-
-			Vector2f tmp = Utils.temp_v2f_0;
-			tmp.set(ply.pos())
-					.sub(boss.pos())
-					.normalize();
-			boss.shootAt(tmp);
+		if (boss.bulletCollide(ply.pos(), ply.radius())) {
+			gameInstance().signalLevel(LEVEL.GAME_OVER);
 		}
 	}
 
 	@Override
 	public void render(float dt) {
-		ply.render(dt);
+		plyGhost.render(dt);
 		boss.render(dt);
+		ply.render(dt);
 	}
 
 	@Override
 	public void end() {
 		ply.close();
 		boss.close();
+		plyGhost.close();
 	}
 }

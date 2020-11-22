@@ -13,6 +13,7 @@ import java.util.HashMap;
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL14.*;
+import static org.lwjgl.stb.STBImage.*;
 import static org.lwjgl.system.MemoryStack.*;
 import static org.lwjgl.system.MemoryUtil.*;
 
@@ -26,6 +27,12 @@ public class BulletSurvive {
 	private Shader base_shader;
 	private ILevel level;
 
+	public enum LEVEL {
+		IN_GAME, GAME_OVER
+	}
+	private LEVEL level_no = LEVEL.IN_GAME;
+	private boolean level_signal = false;
+
 	// Timers
 	private final Timer game_timer = new Timer();
 	private final Timer render_timer = new Timer();
@@ -33,6 +40,7 @@ public class BulletSurvive {
 	// Key input
 	private final KeyCallBack kcb = new KeyCallBack();
 	private final HashMap<Integer, Boolean> key_map = new HashMap<>();
+
 
 	/**
 	 * Dimensions vector -- window dimensions
@@ -97,6 +105,16 @@ public class BulletSurvive {
 		gameInstance().run();
 	}
 
+	/**
+	 * Signals to game instance to change level at the end of loop
+	 *
+	 * @param level enum of level to change to
+	 */
+	public void signalLevel(LEVEL level) {
+		this.level_no = level;
+		this.level_signal = true;
+	}
+
 	public void run() {
 		init();
 
@@ -131,24 +149,7 @@ public class BulletSurvive {
 		// Setup a key callback. It will be called every time a key is pressed, repeated or released.
 		glfwSetKeyCallback(window, kcb);
 
-		// Get the thread stack and push a new frame
-		try (MemoryStack stack = stackPush()) {
-			IntBuffer pWidth = stack.mallocInt(1); // int*
-			IntBuffer pHeight = stack.mallocInt(1); // int*
-
-			// Get the window size passed to glfwCreateWindow
-			glfwGetWindowSize(window, pWidth, pHeight);
-
-			// Get the resolution of the primary monitor
-			GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-			// Center the window
-			glfwSetWindowPos(
-					window,
-					(vidmode.width() - pWidth.get(0)) / 2,
-					(vidmode.height() - pHeight.get(0)) / 2
-			);
-		}
+		initWindowIcon();
 
 		// Make the OpenGL context current
 		glfwMakeContextCurrent(window);
@@ -165,7 +166,7 @@ public class BulletSurvive {
 		Utils.checkGlErrors();
 
 		// Set the clear color
-		glClearColor(0.5f, 0.5f, 0.5f, 0.0f);
+		glClearColor(0.0125f, 0.0125f, 0.0125f, 0.0f);
 		Utils.checkGlErrors();
 
 		// Alpha blending
@@ -177,13 +178,35 @@ public class BulletSurvive {
 		base_shader = new Shader("assets/shaders/base.vert", "assets/shaders/base.frag");
 
 		// Set pixel matrix
-		pixelMatrix = new Matrix4f().scale(1 / getDimensions().x, 1 / getDimensions().y, 1);
+		pixelMatrix = new Matrix4f().scale(1 / (getDimensions().x / 2.f), 1 / (getDimensions().y / 2.f), 1);
 
 		// Open AL initialization here, something something ALC.create() and get device null and idk
 
 
 		// Utility temporaries
 		Utils.initTemp();
+	}
+
+	private void initWindowIcon() {
+		try (MemoryStack stack = stackPush()) {
+			IntBuffer pw = stack.mallocInt(1);
+			IntBuffer ph = stack.mallocInt(1);
+			IntBuffer ch = stack.mallocInt(1);
+
+			ByteBuffer image;
+			String icon = "assets/icon.png";
+			image = stbi_load(icon, pw, ph, ch, 4);
+
+			if (image == null) throw new RuntimeException(String.format("Image not found: %s", icon));
+
+			GLFWImage.Buffer gimg = GLFWImage.callocStack(1, stack);
+			gimg.width(pw.get());
+			gimg.height(ph.get());
+			gimg.pixels(image);
+			glfwSetWindowIcon(this.window, gimg);
+
+			stbi_image_free(image);
+		}
 	}
 
 	private void gameRender(float dt) {
@@ -202,11 +225,11 @@ public class BulletSurvive {
 		game_timer.init();
 		render_timer.init();
 
-		// Update inputs at 240 Hz
+		// Update inputs at 256 Hz
 		float game_elapsed;
 		float render_time;
 		float game_acc = 0f;
-		float game_interval = 1f / 240;
+		float game_interval = 1.f / 256.f;
 		while (!glfwWindowShouldClose(window)) {
 			// Process glfw events
 			glfwPollEvents();
@@ -225,13 +248,28 @@ public class BulletSurvive {
 			gameRender(render_time);
 
 			Utils.checkGlErrors();
+
+			// Check for level change
+			if (this.level_signal) {
+				this.level_signal = false;
+				this.level.end();
+				switch (this.level_no) {
+					// In-game
+					case IN_GAME:
+						this.level = new InGameLevel();
+						break;
+					// Game over
+					case GAME_OVER:
+						this.level = new GameOver();
+						break;
+				}
+			}
 		}
 	}
 
 	private void cleanup() {
-		this.base_shader.close();
-
 		level.end();
+		this.base_shader.close();
 
 		// Free utilitiy temps
 		Utils.cleanTemp();

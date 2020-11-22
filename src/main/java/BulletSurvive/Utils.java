@@ -27,4 +27,10 @@ public class Utils {
 			throw new RuntimeException(String.format("GL ERROR: %x%n", e));
 		}
 	}
+
+	public static boolean circleCollide(Vector2fc p1, float r1, Vector2fc p2, float r2) {
+		float d = p1.distanceSquared(p2);
+		float d2 = r1 + r2;
+		return d <= (d2 * d2);
+	}
 }

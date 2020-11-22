@@ -28,6 +28,10 @@ public class Bullets implements IEntity, AutoCloseable {
 		bulletSprite = new Sprite("assets/candy_corn.png");
 	}
 
+	private float radius() {
+		return 12.f;
+	}
+
 	private void initBuffers() {
 		bulletsUsed = 0;
 		bulletCapacity = 2048;
@@ -39,15 +43,13 @@ public class Bullets implements IEntity, AutoCloseable {
 	}
 
 	// Attempts to add a bullet
-	public boolean addBullet(Vector2fc position, Vector2fc velocity) {
+	public void addBullet(Vector2fc position, Vector2fc velocity) {
 		int ind = bulletVacancy();
 
-		if (ind < 0) return false;
+		if (ind < 0) return;
 
 		putBullet(ind, position, velocity);
 		this.bulletsUsed = this.bulletsUsed + 1;
-
-		return true;
 	}
 
 	public void removeBullet(int index) {
@@ -107,6 +109,21 @@ public class Bullets implements IEntity, AutoCloseable {
 		return baseIndex(index) + 16;
 	}
 
+	public boolean bulletsColliding(Vector2fc pos, float r) {
+		float br = radius();
+		for (int i = 0; i < bulletCapacity; ++i) {
+			int pos_ind = posIndex(i);
+			int val_ind = valIndex(i);
+
+			if (bullet_buf.getChar(val_ind) == (char) 0) continue;
+
+			Vector2f bpos = Utils.temp_v2f_0.set(pos_ind, bullet_buf);
+
+			if (Utils.circleCollide(pos, r, bpos, br)) return true;
+		}
+		return false;
+	}
+
 	@Override
 	public void tick(float dt) {
 		// Advance velocities of bullets in here
@@ -123,11 +140,11 @@ public class Bullets implements IEntity, AutoCloseable {
 			pos.add(vel.mul(dt));
 
 			Vector2fc dim = gameInstance().getDimensions();
-			int margin = 256;
-			if (pos.x >= (dim.x() + margin) ||
-					pos.x <= -(dim.x() + margin) ||
-					pos.y >= (dim.y() + margin) ||
-					pos.y <= -(dim.y() + margin)) {
+			int margin = 64;
+			if (pos.x >= (dim.x() / 2.f + margin) ||
+					pos.x <= -(dim.x() / 2.f + margin) ||
+					pos.y >= (dim.y() / 2.f + margin) ||
+					pos.y <= -(dim.y() / 2.f + margin)) {
 				removeBullet(i);
 				continue;
 			}
@@ -146,13 +163,13 @@ public class Bullets implements IEntity, AutoCloseable {
 
 			if (bullet_buf.getChar(val_ind) == (char) 0) continue;
 
-			Vector2f tmp = Utils.temp_v2f_0.set(1, 0);
+			Vector2f unit = Utils.temp_v2f_0.set(1, 0);
 			Vector2f vel = Utils.temp_v2f_1.set(vel_ind, bullet_buf);
-			float angle = -vel.angle(tmp);
+			float angle = -vel.angle(unit);
 
 			Vector2f pos = Utils.temp_v2f_0.set(pos_ind, bullet_buf);
 
-			bulletSprite.draw(pos, angle, 0.25f, Utils.temp_m4f, Utils.temp_flbf);
+			bulletSprite.draw(pos, angle, 1.f, Utils.temp_m4f, Utils.temp_flbf);
 		}
 	}
 
