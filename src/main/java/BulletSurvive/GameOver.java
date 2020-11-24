@@ -7,72 +7,72 @@ import org.joml.Math;
 
 public class GameOver implements ILevel {
 
-  /*
-		State diagram - entry point 0:
-		0 - waiting for release of enter, on release of enter go to 1
-		1 - waiting for press of enter, on press of enter go to new level
-	 */
-  int state = 0;
+	/*
+		  State diagram - entry point 0:
+		  0 - waiting for release of enter, on release of enter go to 1
+		  1 - waiting for press of enter, on press of enter go to new level
+	   */
+	int state = 0;
 
-  char[] text = { 'G', 'A', 'M', 'E', 'O', 'V', 'E', 'R' };
-  Letter[] text_ents = new Letter[8];
+	char[] text = {'G', 'A', 'M', 'E', 'O', 'V', 'E', 'R'};
+	Letter[] text_ents = new Letter[8];
 
-  public GameOver() {
-    // Create letters, set position
-    // phase interval
-    float ph_in = (float) Math.PI * 2.f / 3.f;
-    for (int i = 0; i < 8; ++i) {
-      Letter l = text_ents[i] = new Letter(text[i], ph_in * i);
-      int h_i = i % 4;
-      int v_i = i / 4;
-      // intervals
-      float v_int = 80.f;
-      float h_int = 128.f;
-      l.pos().set(-1.5 * h_int + h_int * h_i, v_int - 2 * v_int * v_i);
-    }
-  }
+	public GameOver() {
+		// Create letters, set position
+		// phase interval
+		float ph_in = (float) Math.PI * 2.f / 3.f;
+		for (int i = 0; i < 8; ++i) {
+			Letter l = text_ents[i] = new Letter(text[i], ph_in * i);
+			int h_i = i % 4;
+			int v_i = i / 4;
+			// intervals
+			float v_int = 80.f;
+			float h_int = 128.f;
+			l.pos().set(-1.5 * h_int + h_int * h_i, v_int - 2 * v_int * v_i);
+		}
+	}
 
-  public GameOver(int final_score) {
-    // Create letters, set position
-    // phase interval
-    float ph_in = (float) Math.PI * 2.f / 3.f;
-    for (int i = 0; i < 8; ++i) {
-      Letter l = text_ents[i] = new Letter(text[i], ph_in * i);
-      int h_i = i % 4;
-      int v_i = i / 4;
-      // intervals
-      float v_int = 80.f;
-      float h_int = 128.f;
-      l.pos().set(-1.5 * h_int + h_int * h_i, v_int - 2 * v_int * v_i);
-    }
+	public GameOver(int final_score) {
+		// Create letters, set position
+		// phase interval
+		float ph_in = (float) Math.PI * 2.f / 3.f;
+		for (int i = 0; i < 8; ++i) {
+			Letter l = text_ents[i] = new Letter(text[i], ph_in * i);
+			int h_i = i % 4;
+			int v_i = i / 4;
+			// intervals
+			float v_int = 80.f;
+			float h_int = 128.f;
+			l.pos().set(-1.5 * h_int + h_int * h_i, v_int - 2 * v_int * v_i);
+		}
 
-    System.out.println("Final Score " + String.valueOf(final_score));
-  }
+		System.out.println("Final Score " + String.valueOf(final_score));
+	}
 
-  private void clk() {
-    if (state == 0) {
-      if (!gameInstance().getKeyState(GLFW_KEY_ENTER)) state = 1;
-    } else if (state == 1) {
-      if (gameInstance().getKeyState(GLFW_KEY_ENTER)) gameInstance()
-        .signalLevel(LEVEL.IN_GAME, 0);
-      if (gameInstance().getKeyState(GLFW_KEY_T)) gameInstance()
-        .signalLevel(LEVEL.TITLE, 0);
-    }
-  }
+	private void clk() {
+		if (state == 0) {
+			if (!gameInstance().getKeyState(GLFW_KEY_ENTER)) state = 1;
+		} else if (state == 1) {
+			if (gameInstance().getKeyState(GLFW_KEY_ENTER)) gameInstance()
+					.signalLevel(LEVEL.IN_GAME, 0);
+			if (gameInstance().getKeyState(GLFW_KEY_T)) gameInstance()
+					.signalLevel(LEVEL.TITLE, 0);
+		}
+	}
 
-  @Override
-  public void tick(float dt) {
-    for (Letter l : text_ents) l.tick(dt);
-    clk();
-  }
+	@Override
+	public void tick(float dt) {
+		for (Letter l : text_ents) l.tick(dt);
+		clk();
+	}
 
-  @Override
-  public void render(float dt) {
-    for (Letter l : text_ents) l.render(dt);
-  }
+	@Override
+	public void render(float dt) {
+		for (Letter l : text_ents) l.render(dt);
+	}
 
-  @Override
-  public void end() {
-    for (Letter l : text_ents) l.close();
-  }
+	@Override
+	public void end() {
+		for (Letter l : text_ents) l.close();
+	}
 }

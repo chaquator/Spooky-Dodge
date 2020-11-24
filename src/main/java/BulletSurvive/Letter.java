@@ -11,7 +11,7 @@ public class Letter implements IEntity, IPos, AutoCloseable {
 	float ang;
 
 	// Orbit angular speed (rad/s)
-	float rspeed = (float)Math.PI * 2.f * 0.75f;
+	float rspeed = (float) Math.PI * 2.f * 0.75f;
 	// Orbit radius
 	float radius = 8.f;
 
@@ -40,7 +40,7 @@ public class Letter implements IEntity, IPos, AutoCloseable {
 	}
 
 	@Override
-	public void close(){
+	public void close() {
 		letterSprite.close();
 	}
 }

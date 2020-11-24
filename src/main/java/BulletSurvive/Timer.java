@@ -2,7 +2,7 @@ package BulletSurvive;
 
 /**
  * Retrieved from https://github.com/lwjglgamedev/lwjglbook/blob/master/chapter02/src/main/java/org/lwjglb/engine/Timer.java
-  */
+ */
 public class Timer {
 
 	private double initTime;
@@ -14,7 +14,7 @@ public class Timer {
 	}
 
 	public double getTime() {
-		return (System.nanoTime()-initTime) / 1_000_000_000.0;
+		return (System.nanoTime() - initTime) / 1_000_000_000.0;
 	}
 
 	public float getElapsedTime() {

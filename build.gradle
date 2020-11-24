@@ -51,14 +51,8 @@ application {
 }
 
 distZip {
-	into(project.name) {
-		from '.'
-		include "assets/**"
-	}
-}
-
-distTar {
-	into(project.name) {
+	println project.name
+	into(project.name+"/bin") {
 		from '.'
 		include "assets/**"
 	}
